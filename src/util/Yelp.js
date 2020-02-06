@@ -8,24 +8,31 @@ export const Yelp = {
 
         return fetch(`${corsAnywhere}${url}term=${term}&location=${location}&sort_by=${sortBy}`, {
             headers: {
-                Authorization: `Bearer ${apiKey}`;
+                Authorization: `Bearer ${apiKey}`
             }
         }).then(response => {
             return response.json();
         }).then(jsonResponse => {
             if (jsonResponse.businesses) {
-                return jsonResponse.businesses.map( business => ({
-                    id: ,
-                    imageSrc: ,
-                    name: ,
-                    address: ,
-                    city: ,
-                    state: ,
-                    zipCode: ,
-                    category: ,
-                    rating: ,
-                    reviewCount:
+                const businessesArray = jsonResponse.businesses.map( business => ({
+                    id: business.id,
+                    imageSrc: business.image_url,
+                    name: business.name,
+                    address: business.location.address1,
+                    city: business.location.city,
+                    state: business.location.state,
+                    zipCode: business.location.zipCode,
+                    category: business.categories.map( categObj => " " + categObj.title),
+                    rating: business.rating,
+                    reviewCount: business.reviewCount
                 }));
+                if (sortBy === 'rating') {
+                    return businessesArray.sort( (a,b) => b.rating - a.rating);
+                } else if (sortBy === 'review_count') {
+                    return businessesArray.sort( (a,b) => b.reviewCount - a.reviewCount);
+                } else {
+                    return businessesArray;
+                }
             }
         });
     }
